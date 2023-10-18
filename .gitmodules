@@ -1,0 +1,3 @@
+[submodule "parser_api"]
+	path = parser_api
+	url = git@github.com:passimens/parser-api.git
