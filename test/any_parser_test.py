@@ -24,6 +24,16 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
         """Validates the parsed items against the expected items."""
         self.assertEqual(self.parsed_items, self.parser_meta["dataset"][self.src_file])
 
+    async def _wait_for_parsing_task(self, task):
+        """Waits for the parsing task to complete."""
+        waited = 0
+        while waited < 10:
+            await asyncio.sleep(0.1)
+            if len(self.parsed_items) >= len(self.parser_meta["dataset"][self.src_file]):
+                break
+            waited += 1
+        task.cancel()
+
     async def _in_test_callback(self, items):
         """Callback function for use in tests."""
         self.parsed_items.extend(items)
@@ -41,14 +51,8 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
     async def test_parse_stdin(self):
         """Tests <SomeParser>.parse_stdin()."""
         print(f"Parsing data from stdin, expecting contents of {self.src_file}...")
-        waited = 0
         task = asyncio.create_task(self.parser.parse_stdin())
-        while waited < 10:
-            await asyncio.sleep(0.1)
-            if len(self.parsed_items) >= len(self.parser_meta["dataset"][self.src_file]):
-                break
-            waited += 1
-        task.cancel()
+        await self._wait_for_parsing_task(task)
         self._verify_parsed_items()
 
     async def test_parse_fifo(self):
@@ -58,14 +62,8 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
             f"cat {self.src_file} > {self.fifo_path}",
             )
         print(f"Parsing data from named pipe {self.fifo_path}... ")
-        waited = 0
         task = asyncio.create_task(self.parser.parse_fifo(self.fifo_path))
-        while waited < 10:
-            await asyncio.sleep(0.1)
-            if len(self.parsed_items) >= len(self.parser_meta["dataset"][self.src_file]):
-                break
-            waited += 1
-        task.cancel()
+        await self._wait_for_parsing_task(task)
         self._verify_parsed_items()
 
     async def test_parse_stream(self):
@@ -76,14 +74,8 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             )
-        waited = 0
         task = asyncio.create_task(self.parser.parse_stream(proc.stdout))
-        while waited < 10:
-            await asyncio.sleep(0.1)
-            if len(self.parsed_items) >= len(self.parser_meta["dataset"][self.src_file]):
-                break
-            waited += 1
-        task.cancel()
+        await self._wait_for_parsing_task(task)
         self._verify_parsed_items()
 
 
