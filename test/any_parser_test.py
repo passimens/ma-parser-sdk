@@ -18,6 +18,11 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
             "data/test_data_2.txt": ["abc", "cde", "efg", "ghi", "ijk", "klm", "mno", "opq", "qrs"],
             },
         }
+    # In some cases it may be necessary to override _verify_parsed_items method
+
+    def _verify_parsed_items(self) -> None:
+        """Validates the parsed items against the expected items."""
+        self.assertEqual(self.parsed_items, self.parser_meta["dataset"][self.src_file])
 
     async def _in_test_callback(self, items):
         """Callback function for use in tests."""
@@ -44,7 +49,7 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
                 break
             waited += 1
         task.cancel()
-        self.assertEqual(self.parsed_items, self.parser_meta["dataset"][self.src_file])
+        self._verify_parsed_items()
 
     async def test_parse_fifo(self):
         """Tests <SomeParser>.parse_fifo()."""
@@ -61,7 +66,7 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
                 break
             waited += 1
         task.cancel()
-        self.assertEqual(self.parsed_items, self.parser_meta["dataset"][self.src_file])
+        self._verify_parsed_items()
 
     async def test_parse_stream(self):
         """Tests <SomeParser>.parse_stream()."""
@@ -79,7 +84,7 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
                 break
             waited += 1
         task.cancel()
-        self.assertEqual(self.parsed_items, self.parser_meta["dataset"][self.src_file])
+        self._verify_parsed_items()
 
 
 if __name__ == "__main__":
