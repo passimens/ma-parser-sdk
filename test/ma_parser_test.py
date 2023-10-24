@@ -18,6 +18,9 @@ class TestMAParser(TestAnyParser):
     """Common behavior for tests for any specific parser inheriting from BaseParser/XmlBaseParser,
     using Magritte descriptions for parsed items validation."""
 
+    # Subclasses should ideally override only the following class variables:
+
+    # Descriptions of parsed items
     host_desc = MAContainer()
     port_desc = MAContainer()
     host_desc.setChildren([
@@ -29,6 +32,7 @@ class TestMAParser(TestAnyParser):
         MAIntDescription(name="numofport", accessor=MAAttrAccessor("numofport")),
         ])
 
+    # Parsed items expected models
     host1 = Host("1.2.3.4", [])
     host2 = Host("2.3.4.5", [])
     host3 = Host("9.8.7.6", [])
@@ -36,7 +40,6 @@ class TestMAParser(TestAnyParser):
     host2.ports = [Port(host2, 123), Port(host2, 443)]
     host3.ports = [Port(host3, 8080)]
 
-    # Subclasses should ideally override only the following class variable:
     parser_meta = {
         "parser_class": HostPortParser,
         "equality_tester": MAEqualityTester(),
