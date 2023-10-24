@@ -1,16 +1,19 @@
-from MAToOneRelationDescription_class import MAToOneRelationDescription
 from any_parser_test import TestAnyParser
 from MAEqualityTester_visitor import MAEqualityTester
 
+# parser to test:
 #from some_parsers.int_str_parser import IntStrParser
 from some_parsers.host_port_parser import HostPortParser
-from MAIntDescription_class import MAIntDescription
-from MAStringDescription_class import MAStringDescription
-from accessors.MAIdentityAccessor_class import MAIdentityAccessor
+# models to validate parsed items against:
 from model_for_tests.Host import Host
 from model_for_tests.Port import Port
+# Magritte descriptions/accessors:
+from MAIntDescription_class import MAIntDescription
+from MAStringDescription_class import MAStringDescription
 from MAContainer_class import MAContainer
+from MAToOneRelationDescription_class import MAToOneRelationDescription
 from MAToManyRelationDescription_class import MAToManyRelationDescription
+from accessors.MAIdentityAccessor_class import MAIdentityAccessor
 from accessors.MAAttrAccessor_class import MAAttrAccessor
 
 
@@ -58,6 +61,17 @@ class TestMAParser(TestAnyParser):
                 (host_desc, host3),
                 (port_desc, host3.ports[0]),
                 ],
+            },
+        }
+
+    '''
+    parser_meta = {
+        "parser_class": HostPortParser,
+        "equality_tester": MAEqualityTester(),
+        "dataset": {
+            # <src_file>: [(<item_description>, <expected_item>)]
+            # any number of <src_file> can be specified, but only one will be used in each test run
+            # specific <src_file> can be specified via the PARSER_SRC_FILE environment variable
             "data/test_data_1.txt": [
                 (MAIntDescription(accessor=MAIdentityAccessor()), 1),
                 (MAIntDescription(accessor=MAIdentityAccessor()), 1),
@@ -82,6 +96,8 @@ class TestMAParser(TestAnyParser):
                 ],
             },
         }
+    '''
+
     # In some cases it may be necessary to override _verify_parsed_items method
 
     def _verify_parsed_items(self) -> None:
