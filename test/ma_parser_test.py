@@ -1,5 +1,5 @@
 from any_parser_test import TestAnyParser
-from MAEqualityTester_visitor import MAEqualityTester
+from visitors.MAEqualityTester_visitor import MAEqualityTester
 
 # parser to test:
 #from some_parsers.int_str_parser import IntStrParser
@@ -8,11 +8,11 @@ from some_parsers.host_port_parser import HostPortParser
 from model_for_tests.Host import Host
 from model_for_tests.Port import Port
 # Magritte descriptions/accessors:
-from MAIntDescription_class import MAIntDescription
-from MAStringDescription_class import MAStringDescription
-from MAContainer_class import MAContainer
-from MAToOneRelationDescription_class import MAToOneRelationDescription
-from MAToManyRelationDescription_class import MAToManyRelationDescription
+from descriptions.MAIntDescription_class import MAIntDescription
+from descriptions.MAStringDescription_class import MAStringDescription
+from descriptions.MAContainer_class import MAContainer
+from descriptions.MAToOneRelationDescription_class import MAToOneRelationDescription
+from descriptions.MAToManyRelationDescription_class import MAToManyRelationDescription
 from accessors.MAIdentityAccessor_class import MAIdentityAccessor
 from accessors.MAAttrAccessor_class import MAAttrAccessor
 
