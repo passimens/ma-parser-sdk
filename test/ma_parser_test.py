@@ -1,8 +1,10 @@
 from any_parser_test import TestAnyParser
 from visitors.MAEqualityTester_visitor import MAEqualityTester
+from error import FormatError
 
 # parser to test:
 #from some_parsers.int_str_parser import IntStrParser
+from some_parsers.int_parser import IntParser
 from some_parsers.host_port_parser import HostPortParser
 # models to validate parsed items against:
 from model_for_tests.Host import Host
@@ -47,53 +49,72 @@ class TestMAParser(TestAnyParser):
         "parser_class": HostPortParser,
         "equality_tester": MAEqualityTester(),
         "dataset": {
-            # <src_file>: [(<item_description>, <expected_item>)]
+            # <src_file>: { 'exc': <expected_exception>, 'res': [<expected_items>] }
             # any number of <src_file> can be specified, but only one will be used in each test run
             # specific <src_file> can be specified via the PARSER_SRC_FILE environment variable
-            "data/test_data_3.txt": [
-                (host_desc, host1),
-                (port_desc, host1.ports[0]),
-                (port_desc, host1.ports[1]),
-                (port_desc, host1.ports[2]),
-                (host_desc, host2),
-                (port_desc, host2.ports[0]),
-                (port_desc, host2.ports[1]),
-                (host_desc, host3),
-                (port_desc, host3.ports[0]),
-                ],
+            # for invalid <src_file> expected error should be specified in 'exc' field
+            "data/host_port_ok.txt": {
+                "exc": None,
+                "res": [
+                    (host_desc, host1),
+                    (port_desc, host1.ports[0]),
+                    (port_desc, host1.ports[1]),
+                    (port_desc, host1.ports[2]),
+                    (host_desc, host2),
+                    (port_desc, host2.ports[0]),
+                    (port_desc, host2.ports[1]),
+                    (host_desc, host3),
+                    (port_desc, host3.ports[0]),
+                    ],
+                },
+            "data/host_port_invalid.txt": {
+                "exc": FormatError,
+                "res": [],
+                },
+            "data/host_port_empty.txt": {
+                "exc": None,
+                "res": [],
+                },
             },
         }
 
     '''
     parser_meta = {
-        "parser_class": HostPortParser,
+        "parser_class": IntParser,
         "equality_tester": MAEqualityTester(),
         "dataset": {
-            # <src_file>: [(<item_description>, <expected_item>)]
+            # <src_file>: { 'exc': <expected_exception>, 'res': [<expected_items>] }
             # any number of <src_file> can be specified, but only one will be used in each test run
             # specific <src_file> can be specified via the PARSER_SRC_FILE environment variable
-            "data/test_data_1.txt": [
-                (MAIntDescription(accessor=MAIdentityAccessor()), 1),
-                (MAIntDescription(accessor=MAIdentityAccessor()), 1),
-                (MAIntDescription(accessor=MAIdentityAccessor()), 2),
-                (MAIntDescription(accessor=MAIdentityAccessor()), 3),
-                (MAIntDescription(accessor=MAIdentityAccessor()), 5),
-                (MAIntDescription(accessor=MAIdentityAccessor()), 8),
-                (MAIntDescription(accessor=MAIdentityAccessor()), 13),
-                (MAIntDescription(accessor=MAIdentityAccessor()), 21),
-                (MAIntDescription(accessor=MAIdentityAccessor()), 34),
-                ],
-            "data/test_data_2.txt": [
-                (MAStringDescription(accessor=MAIdentityAccessor()), "abc"),
-                (MAStringDescription(accessor=MAIdentityAccessor()), "cde"),
-                (MAStringDescription(accessor=MAIdentityAccessor()), "efg"),
-                (MAStringDescription(accessor=MAIdentityAccessor()), "ghi"),
-                (MAStringDescription(accessor=MAIdentityAccessor()), "ijk"),
-                (MAStringDescription(accessor=MAIdentityAccessor()), "klm"),
-                (MAStringDescription(accessor=MAIdentityAccessor()), "mno"),
-                (MAStringDescription(accessor=MAIdentityAccessor()), "opq"),
-                (MAStringDescription(accessor=MAIdentityAccessor()), "qrs"),
-                ],
+            # for invalid <src_file> expected error should be specified in 'exc' field
+            "data/int_data_1.txt": {
+                "exc": None,
+                "res": [
+                    (MAIntDescription(accessor=MAIdentityAccessor()), 1),
+                    (MAIntDescription(accessor=MAIdentityAccessor()), 1),
+                    (MAIntDescription(accessor=MAIdentityAccessor()), 2),
+                    (MAIntDescription(accessor=MAIdentityAccessor()), 3),
+                    (MAIntDescription(accessor=MAIdentityAccessor()), 5),
+                    (MAIntDescription(accessor=MAIdentityAccessor()), 8),
+                    (MAIntDescription(accessor=MAIdentityAccessor()), 13),
+                    (MAIntDescription(accessor=MAIdentityAccessor()), 21),
+                    (MAIntDescription(accessor=MAIdentityAccessor()), 34),
+                    ],
+                },
+            "data/str_data_1.txt": {
+                "exc": ValueError,
+                "res": [
+                    (MAStringDescription(accessor=MAIdentityAccessor()), "abc"),
+                    (MAStringDescription(accessor=MAIdentityAccessor()), "cde"),
+                    (MAStringDescription(accessor=MAIdentityAccessor()), "efg"),
+                    (MAStringDescription(accessor=MAIdentityAccessor()), "ghi"),
+                    (MAStringDescription(accessor=MAIdentityAccessor()), "ijk"),
+                    (MAStringDescription(accessor=MAIdentityAccessor()), "klm"),
+                    (MAStringDescription(accessor=MAIdentityAccessor()), "mno"),
+                    (MAStringDescription(accessor=MAIdentityAccessor()), "opq"),
+                    (MAStringDescription(accessor=MAIdentityAccessor()), "qrs"),
+                    ],
+                }
             },
         }
     '''
@@ -104,16 +125,15 @@ class TestMAParser(TestAnyParser):
         """Validates the parsed items against the expected items."""
         item_num = 0
         for item in self.parsed_items:
-            errs = self.parser_meta["dataset"][self.src_file][item_num][0].validate(item)
+            errs = self.expected_data[item_num][0].validate(item)
             self.assertEqual(len(errs), 0, f"Item #{item_num} ({item!r}) validation failed: {errs}")
             self.assertTrue(
                 self.parser_meta["equality_tester"].equal(
                     item,
-                    self.parser_meta["dataset"][self.src_file][item_num][1],
-                    self.parser_meta["dataset"][self.src_file][item_num][0],
+                    self.expected_data[item_num][1],
+                    self.expected_data[item_num][0],
                     ),
                 f"Item #{item_num} ({item!r}) is not equal to the expected item "
-                f"({self.parser_meta['dataset'][self.src_file][item_num][1]!r})",
+                f"({self.expected_data[item_num][1]!r})",
                 )
             item_num += 1
-
