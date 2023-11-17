@@ -3,6 +3,7 @@ import unittest
 from parser_api.example.copy_parser import CopyParser
 from some_parsers.int_parser import IntParser
 import os
+import stat
 
 
 class TestAnyParser(unittest.IsolatedAsyncioTestCase):
@@ -16,12 +17,12 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
             # any number of <src_file> can be specified, but only one will be used in each test run
             # specific <src_file> can be specified via the PARSER_SRC_FILE environment variable
             # for invalid <src_file> expected error should be specified in 'exc' field
-            "data/test_data_1.txt": {
+            "data/int_data_1.txt": {
                 "exc": None,
                 # "res": ["1", "1", "2", "3", "5", "8", "13", "21", "34"],
                 "res": [1, 1, 2, 3, 5, 8, 13, 21, 34],
                 },
-            "data/test_data_2.txt": {
+            "data/str_data_1.txt": {
                 "exc": ValueError,
                 "res": ["abc", "cde", "efg", "ghi", "ijk", "klm", "mno", "opq", "qrs"],
                 },
@@ -57,7 +58,12 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
         self.parsed_items = []
         self.parser = self.parser_meta["parser_class"](self._in_test_callback)
         self.fifo_path = "test_fifo"
-        os.mkfifo(self.fifo_path)
+        try:
+            os.mkfifo(self.fifo_path)
+        except FileExistsError:
+            if not stat.S_ISFIFO(os.stat(self.fifo_path).st_mode):
+                print(f"{self.fifo_path} exists but is not a named pipe, exiting.")
+                raise
         self.src_file = os.getenv("PARSER_SRC_FILE", self.parser_meta["dataset"].keys().__iter__().__next__())
         self.expected_error = self.parser_meta["dataset"][self.src_file]["exc"]
         self.expected_data = self.parser_meta["dataset"][self.src_file]["res"]
