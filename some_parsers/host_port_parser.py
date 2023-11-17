@@ -2,6 +2,7 @@ import logging
 from typing import Callable, List, Any, Awaitable
 
 from base_parser import BaseParser
+from error import FormatError
 from model_for_tests.Host import Host
 from model_for_tests.Port import Port
 
@@ -38,3 +39,7 @@ class HostPortParser(BaseParser):
             self._host = Host(parts[1].strip(), [])
         elif parts[0].lower() == 'p':
             self._ports.append(Port(self._host, int(parts[1].strip())))
+        elif parts[0].strip() == '':
+            pass
+        else:
+            raise FormatError(f"Invalid line prefix: {line}")
