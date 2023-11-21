@@ -65,6 +65,7 @@ class TestMAParser(TestAnyParser):
 
     def _verify_parsed_items(self) -> None:
         """Validates the parsed items against the expected items."""
+        self.assertEqual(len(self.parsed_items), len(self.expected_data), "Number of parsed items doesn't match")
         item_num = 0
         for item in self.parsed_items:
             errs = self.expected_data[item_num][0].validate(item)
