@@ -1,6 +1,6 @@
 from test_base.ma_parser_test import TestMAParser
 from visitors.MAEqualityTester_visitor import MAEqualityTester
-from error import FormatError
+from parser_api.error import FormatError
 
 # parser to test:
 from host_port_parser.host_port_parser import HostPortParser
