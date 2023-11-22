@@ -1,7 +1,5 @@
 import asyncio
 import unittest
-from parser_api.example.copy_parser import CopyParser
-from some_parsers.int_parser import IntParser
 import os
 import stat
 
@@ -9,7 +7,8 @@ import stat
 class TestAnyParser(unittest.IsolatedAsyncioTestCase):
     """Common behavior for the tests for any specific parser inheriting from BaseParser/XmlBaseParser."""
 
-    # Subclasses should ideally override only the following class variable:
+    # Subclasses should ideally only define the following class variable, e.g.:
+    '''
     parser_meta = {
         "parser_class": IntParser,
         "dataset": {
@@ -28,6 +27,7 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
                 },
             },
         }
+    '''
     # In some cases it may be necessary to override _verify_parsed_items method
 
     def _verify_parsed_items(self) -> None:
@@ -112,8 +112,3 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
         else:
             await self._wait_for_parsing_task(task)
             self._verify_parsed_items()
-
-
-if __name__ == "__main__":
-    # logging.basicConfig(level=logging.DEBUG)
-    unittest.main()
