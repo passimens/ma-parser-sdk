@@ -84,7 +84,7 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
 
     async def test_parse_fifo(self):
         """Tests <SomeParser>.parse_fifo()."""
-        print("Running a command which would return text to parse via a named pipe...")
+        print(f"Sending contents of {self.src_file} to named pipe {self.fifo_path}...")
         proc = await asyncio.create_subprocess_shell(
             f"cat {self.src_file} > {self.fifo_path}",
             )
@@ -99,7 +99,7 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
 
     async def test_parse_stream(self):
         """Tests <SomeParser>.parse_stream()."""
-        print("Running a command which would return text to parse via subprocess.PIPE...")
+        print(f"Sending contents of {self.src_file} to subprocess.PIPE...")
         proc = await asyncio.create_subprocess_shell(
             f"cat {self.src_file}",
             stdout=asyncio.subprocess.PIPE,
