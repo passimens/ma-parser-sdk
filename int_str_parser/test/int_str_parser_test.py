@@ -1,13 +1,13 @@
 from test_base.ma_parser_test import TestMAParser
-from visitors.MAEqualityTester_visitor import MAEqualityTester
+from Magritte.visitors.MAEqualityTester_visitor import MAEqualityTester
 
 # parser to test:
 from int_str_parser.int_str_parser import IntStrParser
 
 # Magritte descriptions/accessors:
-from descriptions.MAIntDescription_class import MAIntDescription
-from descriptions.MAStringDescription_class import MAStringDescription
-from accessors.MAIdentityAccessor_class import MAIdentityAccessor
+from Magritte.descriptions.MAIntDescription_class import MAIntDescription
+from Magritte.descriptions.MAStringDescription_class import MAStringDescription
+from Magritte.accessors.MAIdentityAccessor_class import MAIdentityAccessor
 
 
 class TestIntStrParser(TestMAParser):

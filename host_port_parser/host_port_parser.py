@@ -3,8 +3,8 @@ from typing import Callable, List, Any, Awaitable
 
 from parser_api.base_parser import BaseParser
 from parser_api.error import FormatError
-from model_for_tests.Host import Host
-from model_for_tests.Port import Port
+from Magritte.model_for_tests.Host import Host
+from Magritte.model_for_tests.Port import Port
 
 logger = logging.getLogger(__name__)
 

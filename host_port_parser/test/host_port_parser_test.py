@@ -1,19 +1,19 @@
 from test_base.ma_parser_test import TestMAParser
-from visitors.MAEqualityTester_visitor import MAEqualityTester
+from Magritte.visitors.MAEqualityTester_visitor import MAEqualityTester
 from parser_api.error import FormatError
 
 # parser to test:
 from host_port_parser.host_port_parser import HostPortParser
 # models to validate parsed items against:
-from model_for_tests.Host import Host
-from model_for_tests.Port import Port
+from Magritte.model_for_tests.Host import Host
+from Magritte.model_for_tests.Port import Port
 # Magritte descriptions/accessors:
-from descriptions.MAIntDescription_class import MAIntDescription
-from descriptions.MAStringDescription_class import MAStringDescription
-from descriptions.MAContainer_class import MAContainer
-from descriptions.MAToOneRelationDescription_class import MAToOneRelationDescription
-from descriptions.MAToManyRelationDescription_class import MAToManyRelationDescription
-from accessors.MAAttrAccessor_class import MAAttrAccessor
+from Magritte.descriptions.MAIntDescription_class import MAIntDescription
+from Magritte.descriptions.MAStringDescription_class import MAStringDescription
+from Magritte.descriptions.MAContainer_class import MAContainer
+from Magritte.descriptions.MAToOneRelationDescription_class import MAToOneRelationDescription
+from Magritte.descriptions.MAToManyRelationDescription_class import MAToManyRelationDescription
+from Magritte.accessors.MAAttrAccessor_class import MAAttrAccessor
 
 
 class TestHostPortParser(TestMAParser):
