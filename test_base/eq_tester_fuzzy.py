@@ -9,6 +9,10 @@ class MAEqualityTesterFuzzy(MAEqualityTester):
         self._tolerance = tolerance  # tolerance in seconds
 
     def visitDateAndTimeDescription(self, description: MADescription):
-        diff = (description.accessor.read(self._model1) - description.accessor.read(self._model2)).total_seconds()
+        value1 = description.accessor.read(self._model1)
+        value2 = description.accessor.read(self._model2)
+        if value1 is None:
+            return value2 is None
+        diff = (value1 - value2).total_seconds()
         if abs(diff) > self._tolerance:
             raise MAInequalityFound()
