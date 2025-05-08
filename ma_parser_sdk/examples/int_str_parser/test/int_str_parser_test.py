@@ -1,8 +1,8 @@
-from test_base.ma_parser_test import TestMAParser
+from ma_parser_sdk.test_base.ma_parser_test import TestMAParser
 from Magritte.visitors.MAEqualityTester_visitor import MAEqualityTester
 
 # parser to test:
-from int_str_parser.int_str_parser import IntStrParser
+from ma_parser_sdk.examples.int_str_parser.int_str_parser import IntStrParser
 
 # Magritte descriptions/accessors:
 from Magritte.descriptions.MAIntDescription_class import MAIntDescription

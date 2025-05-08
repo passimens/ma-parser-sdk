@@ -1,4 +1,4 @@
-from test_base.any_parser_test import TestAnyParser
+from ma_parser_sdk.test_base.any_parser_test import TestAnyParser
 from Magritte.descriptions.MAContainer_class import MAContainer
 from Magritte.visitors.MAJson_visitors import MAObjectJsonWriter, MAValueJsonWriter
 

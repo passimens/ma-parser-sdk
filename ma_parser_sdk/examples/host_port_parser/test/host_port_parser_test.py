@@ -1,9 +1,9 @@
-from test_base.ma_parser_test import TestMAParser
+from ma_parser_sdk.test_base.ma_parser_test import TestMAParser
 from Magritte.visitors.MAEqualityTester_visitor import MAEqualityTester
 from parser_api.error import FormatError
 
 # parser to test:
-from host_port_parser.host_port_parser import HostPortParser
+from ma_parser_sdk.examples.host_port_parser.host_port_parser import HostPortParser
 # models to validate parsed items against:
 from Magritte.model_for_tests.Host import Host
 from Magritte.model_for_tests.Port import Port

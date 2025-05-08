@@ -1,9 +1,6 @@
-import asyncio
 import unittest
-from int_parser.int_parser import IntParser
-from test_base.any_parser_test import TestAnyParser
-import os
-import stat
+from ma_parser_sdk.examples.int_parser.int_parser import IntParser
+from ma_parser_sdk.test_base.any_parser_test import TestAnyParser
 
 
 class TestIntParser(TestAnyParser):
