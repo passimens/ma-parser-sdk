@@ -39,12 +39,34 @@ class TestHostPortParser(TestMAParser):
         )
 
     # Parsed items expected models
-    host1 = Host("1.2.3.4", [])
-    host2 = Host("2.3.4.5", [])
-    host3 = Host("9.8.7.6", [])
-    host1.ports = [Port(host1, 10), Port(host1, 22), Port(host1, 80)]
-    host2.ports = [Port(host2, 123), Port(host2, 443)]
-    host3.ports = [Port(host3, 8080)]
+    host1 = Host()
+    host2 = Host()
+    host3 = Host()
+    host1.ip = "1.2.3.4"
+    host2.ip = "2.3.4.5"
+    host3.ip = "9.8.7.6"
+    port1_10 = Port()
+    port1_22 = Port()
+    port1_80 = Port()
+    port1_10.host = host1
+    port1_10.numofport = 10
+    port1_22.host = host1
+    port1_22.numofport = 22
+    port1_80.host = host1
+    port1_80.numofport = 80
+    port2_123 = Port()
+    port2_443 = Port()
+    port2_123.host = host2
+    port2_123.numofport = 123
+    port2_443.host = host2
+    port2_443.numofport = 443
+    port3_8080 = Port()
+    port3_8080.host = host3
+    port3_8080.numofport = 8080
+
+    host1.ports = [port1_10, port1_22, port1_80]
+    host2.ports = [port2_123, port2_443]
+    host3.ports = [port3_8080]
 
     parser_meta = {
         "parser_class": HostPortParser,

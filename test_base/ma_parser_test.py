@@ -1,6 +1,6 @@
 from test_base.any_parser_test import TestAnyParser
 from Magritte.descriptions.MAContainer_class import MAContainer
-from Magritte.visitors.MAJsonWriter_visitors import MAObjectJsonWriter, MAValueJsonWriter
+from Magritte.visitors.MAJson_visitors import MAObjectJsonWriter, MAValueJsonWriter
 
 
 class TestMAParser(TestAnyParser):

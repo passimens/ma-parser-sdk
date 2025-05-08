@@ -36,11 +36,16 @@ class HostPortParser(BaseParser):
         parts = line.split(':')
         if parts[0].lower() == 'h':
             await self._process_host()
-            self._host = Host(parts[1].strip(), [])
+            self._host = Host()
+            self._host.ip = parts[1].strip()
+            self._host.ports = []
         elif parts[0].lower() == 'p':
             if not self._host:
                 raise FormatError(f"Port without host: {line}")
-            self._ports.append(Port(self._host, int(parts[1].strip())))
+            port = Port()
+            port.host = self._host
+            port.numofport = int(parts[1].strip())
+            self._ports.append(port)
         elif parts[0].strip() == '':
             await self._process_host()
         else:
