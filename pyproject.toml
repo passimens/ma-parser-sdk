@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=42", "parser-api>=0.0.1", "magritte-python>=0.0.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ma-parser-sdk"
+version = "0.0.1"
+description = "Magritte Parser SDK"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
