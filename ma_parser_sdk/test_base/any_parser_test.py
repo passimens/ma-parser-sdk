@@ -71,6 +71,8 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
     async def asyncTearDown(self) -> None:
         os.remove(self.fifo_path)
 
+    @unittest.skipUnless(os.getenv("PARSER_TEST_STDIN"),
+                         "Skipping test_parse_stdin: PARSER_TEST_STDIN env var not set")
     async def test_parse_stdin(self):
         """Tests <SomeParser>.parse_stdin()."""
         print(f"Parsing data from stdin, expecting contents of {self.src_file}...")
@@ -82,6 +84,8 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
             await self._wait_for_parsing_task(task)
             self._verify_parsed_items()
 
+    @unittest.skipUnless(os.getenv("PARSER_TEST_FIFO"),
+                         "Skipping test_parse_fifo:  PARSER_TEST_FIFO env var not set")
     async def test_parse_fifo(self):
         """Tests <SomeParser>.parse_fifo()."""
         print(f"Sending contents of {self.src_file} to named pipe {self.fifo_path}...")
