@@ -7,8 +7,8 @@ name = "ma-parser-sdk"
 version = "0.0.1"
 description = "Magritte Parser SDK"
 dependencies = [
-    "parser-api @ git+ssh://git@github.com/passimens/parser-api@installable-package",
-    "magritte-python @ git+ssh://git@github.com/Assargadon/magritte-python.git"
+    "parser-api @ git+https://github.com/passimens/parser-api@rev_0.1",
+    "magritte-python @ git+https://github.com/Assargadon/magritte-python.git"
 ]
 readme = "README.md"
 requires-python = ">=3.6"
