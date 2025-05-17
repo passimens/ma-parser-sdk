@@ -1,7 +1,6 @@
 import asyncio
 import unittest
 import os
-import stat
 
 
 class TestAnyParser(unittest.IsolatedAsyncioTestCase):
@@ -54,28 +53,30 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
         """Callback function for use in tests."""
         self.parsed_items.extend(items)
 
-    async def asyncSetUp(self) -> None:
-        self.parsed_items = []
-        self.parser = self.parser_meta["parser_class"](self._in_test_callback)
-        self.src_file = os.getenv("PARSER_SRC_FILE", self.parser_meta["dataset"].keys().__iter__().__next__())
-        self.expected_error = self.parser_meta["dataset"][self.src_file]["exc"]
-        self.expected_data = self.parser_meta["dataset"][self.src_file]["res"]
-
-    async def asyncTearDown(self) -> None:
-        pass
-
     async def test_parse_stream(self):
-        """Tests <SomeParser>.parse_stream()."""
-        print(f"Sending contents of {self.src_file} to subprocess.PIPE...")
-        proc = await asyncio.create_subprocess_shell(
-            f"cat {self.src_file}",
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            )
-        task = asyncio.create_task(self.parser.parse_stream(proc.stdout))
-        if self.expected_error is not None:
-            with self.assertRaises(self.expected_error):
-                await self._wait_for_parsing_task(task)
-        else:
-            await self._wait_for_parsing_task(task)
-            self._verify_parsed_items()
+        """Tests parser_class.parse_stream() with all datasets."""
+        parser_class = self.parser_meta["parser_class"]
+
+        for src_file, meta in self.parser_meta["dataset"].items():
+            with self.subTest(src_file=src_file):
+                self.parsed_items = []
+                self.parser = parser_class(self._in_test_callback)
+                self.src_file = src_file
+                self.expected_error = meta["exc"]
+                self.expected_data = meta["res"]
+
+                print(f"Sending contents of {self.src_file} to subprocess.PIPE...")
+
+                proc = await asyncio.create_subprocess_shell(
+                    f"cat {self.src_file}",
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                task = asyncio.create_task(self.parser.parse_stream(proc.stdout))
+
+                if self.expected_error is not None:
+                    with self.assertRaises(self.expected_error):
+                        await self._wait_for_parsing_task(task)
+                else:
+                    await self._wait_for_parsing_task(task)
+                    self._verify_parsed_items()
