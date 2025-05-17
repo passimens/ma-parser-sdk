@@ -1,6 +1,8 @@
 import asyncio
-import unittest
+import importlib.util
 import os
+import unittest
+from pathlib import Path
 
 
 class TestAnyParser(unittest.IsolatedAsyncioTestCase):
@@ -10,21 +12,7 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
     '''
     parser_meta = {
         "parser_class": IntParser,
-        "dataset": {
-            # <src_file>: { 'exc': <expected_exception>, 'res': [<expected_items>] }
-            # any number of <src_file> can be specified, but only one will be used in each test run
-            # specific <src_file> can be specified via the PARSER_SRC_FILE environment variable
-            # for invalid <src_file> expected error should be specified in 'exc' field
-            "data/int_data_1.txt": {
-                "exc": None,
-                # "res": ["1", "1", "2", "3", "5", "8", "13", "21", "34"],
-                "res": [1, 1, 2, 3, 5, 8, 13, 21, 34],
-                },
-            "data/str_data_1.txt": {
-                "exc": ValueError,
-                "res": ["abc", "cde", "efg", "ghi", "ijk", "klm", "mno", "opq", "qrs"],
-                },
-            },
+        "dataset_dir": "data"
         }
     '''
     # In some cases it may be necessary to override _verify_parsed_items method
@@ -53,17 +41,33 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
         """Callback function for use in tests."""
         self.parsed_items.extend(items)
 
-    async def test_parse_stream(self):
-        """Tests parser_class.parse_stream() with all datasets."""
-        parser_class = self.parser_meta["parser_class"]
+    @staticmethod
+    def _load_metadata(py_path: Path) -> dict:
+        """Dynamically loads the `meta` dict from a .py file."""
+        spec = importlib.util.spec_from_file_location(py_path.stem, py_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return getattr(module, "meta")
 
-        for src_file, meta in self.parser_meta["dataset"].items():
-            with self.subTest(src_file=src_file):
-                self.parsed_items = []
-                self.parser = parser_class(self._in_test_callback)
-                self.src_file = src_file
+    async def test_parse_stream(self):
+        """Test parser_class.parse_stream() with all *.txt datasets and per-file metadata."""
+        parser_class = self.parser_meta["parser_class"]
+        dataset_dir = Path(self.parser_meta["dataset_dir"])
+
+        for txt_file in sorted(dataset_dir.glob("*.txt")):
+            meta_file = txt_file.with_suffix(".py")
+
+            with self.subTest(src_file=str(txt_file)):
+                if not meta_file.exists():
+                    self.fail(f"Metadata file not found for {txt_file.name}: expected {meta_file.name}")
+
+                meta = self._load_metadata(meta_file)
+
+                self.src_file = txt_file
                 self.expected_error = meta["exc"]
                 self.expected_data = meta["res"]
+                self.parsed_items = []
+                self.parser = parser_class(self._in_test_callback)
 
                 print(f"Sending contents of {self.src_file} to subprocess.PIPE...")
 
