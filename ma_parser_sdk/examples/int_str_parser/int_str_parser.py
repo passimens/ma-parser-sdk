@@ -13,6 +13,7 @@ class IntStrParser(BaseParser):
             line: str,
             ) -> None:
         """Parses a single line of data."""
+        line = line.rstrip()
         try:
             res = int(line)
         except ValueError:
