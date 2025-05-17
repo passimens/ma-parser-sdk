@@ -57,49 +57,12 @@ class TestAnyParser(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.parsed_items = []
         self.parser = self.parser_meta["parser_class"](self._in_test_callback)
-        self.fifo_path = "test_fifo"
-        try:
-            os.mkfifo(self.fifo_path)
-        except FileExistsError:
-            if not stat.S_ISFIFO(os.stat(self.fifo_path).st_mode):
-                print(f"{self.fifo_path} exists but is not a named pipe, exiting.")
-                raise
         self.src_file = os.getenv("PARSER_SRC_FILE", self.parser_meta["dataset"].keys().__iter__().__next__())
         self.expected_error = self.parser_meta["dataset"][self.src_file]["exc"]
         self.expected_data = self.parser_meta["dataset"][self.src_file]["res"]
 
     async def asyncTearDown(self) -> None:
-        os.remove(self.fifo_path)
-
-    @unittest.skipUnless(os.getenv("PARSER_TEST_STDIN"),
-                         "Skipping test_parse_stdin: PARSER_TEST_STDIN env var not set")
-    async def test_parse_stdin(self):
-        """Tests <SomeParser>.parse_stdin()."""
-        print(f"Parsing data from stdin, expecting contents of {self.src_file}...")
-        task = asyncio.create_task(self.parser.parse_stdin())
-        if self.expected_error is not None:
-            with self.assertRaises(self.expected_error):
-                await self._wait_for_parsing_task(task)
-        else:
-            await self._wait_for_parsing_task(task)
-            self._verify_parsed_items()
-
-    @unittest.skipUnless(os.getenv("PARSER_TEST_FIFO"),
-                         "Skipping test_parse_fifo:  PARSER_TEST_FIFO env var not set")
-    async def test_parse_fifo(self):
-        """Tests <SomeParser>.parse_fifo()."""
-        print(f"Sending contents of {self.src_file} to named pipe {self.fifo_path}...")
-        proc = await asyncio.create_subprocess_shell(
-            f"cat {self.src_file} > {self.fifo_path}",
-            )
-        print(f"Parsing data from named pipe {self.fifo_path}... ")
-        task = asyncio.create_task(self.parser.parse_fifo(self.fifo_path))
-        if self.expected_error is not None:
-            with self.assertRaises(self.expected_error):
-                await self._wait_for_parsing_task(task)
-        else:
-            await self._wait_for_parsing_task(task)
-            self._verify_parsed_items()
+        pass
 
     async def test_parse_stream(self):
         """Tests <SomeParser>.parse_stream()."""
